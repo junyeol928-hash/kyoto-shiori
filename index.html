@@ -1909,6 +1909,11 @@ html:has(body[data-oncover]){background:#5b97cf}
 body[data-oncover]{background:#5b97cf}
 :root[data-theme="dark"] body[data-oncover]{background:#0b1530}
 body{transition:background .4s}
+/* ホーム画面から開いたとき、表紙は画面の上端から下端まで（インジケータの裏まで） */
+@media (display-mode: standalone){
+  .cover{min-height:calc(100dvh + var(--safe-t) + var(--safe-b));margin-top:calc(-1 * var(--safe-t))}
+  :root[data-mode="paged"] body:has(.cover.pg-on){padding-bottom:0}
+}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <script>(function(d){var r=d.documentElement;r.classList.add('js');/* 最初は昼で開く。「夜」を押したときだけ夜を覚える */try{r.setAttribute('data-theme',localStorage.getItem('kyoto-theme')==='dark'?'dark':'light');}catch(e){r.setAttribute('data-theme','light');}if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}var m='paged';try{if(localStorage.getItem('kyoto-mode')==='flow')m='flow';}catch(e){}r.setAttribute('data-mode',m);try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}})(document);</script>
