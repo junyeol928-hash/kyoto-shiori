@@ -1927,6 +1927,13 @@ body[data-oncover] .pager__b[aria-disabled="true"]{opacity:.35}
 /* 端末によっては fixed の範囲が上下の安全領域を含まないので、そのぶん外へ伸ばす */
 :root[data-mode="paged"] .cover__photo{top:calc(-1 * var(--safe-t) - 2px);bottom:calc(-1 * var(--safe-b) - 2px);left:0;right:0}
 html:has(body[data-oncover]),body[data-oncover]{background:#3a3532}
+/* iOS のホーム画面起動では、画面の下がステータスバーぶん（約60px）短く扱われて、
+   fixed の下端が浮く。JS で実測した差（--vb-gap）だけ、下に貼るものを下へ伸ばす */
+:root[data-mode="paged"] .pager{bottom:calc(-1 * var(--vb-gap,0px))}
+:root[data-mode="paged"] .cover__over{bottom:calc(-1 * var(--vb-gap,0px))}
+:root[data-mode="paged"] .cover__photo{bottom:calc(-1 * var(--vb-gap,0px) - var(--safe-b) - 2px)}
+:root[data-mode="paged"] .totop{bottom:calc(var(--pager-h,47px) + 14px - var(--vb-gap,0px))}
+.drawer{bottom:calc(-1 * var(--vb-gap,0px))}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <script>(function(d){var r=d.documentElement;r.classList.add('js');/* 最初は昼で開く。「夜」を押したときだけ夜を覚える */try{r.setAttribute('data-theme',localStorage.getItem('kyoto-theme')==='dark'?'dark':'light');}catch(e){r.setAttribute('data-theme','light');}if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}var m='paged';try{if(localStorage.getItem('kyoto-mode')==='flow')m='flow';}catch(e){}r.setAttribute('data-mode',m);try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}})(document);</script>
@@ -2534,5 +2541,35 @@ html:has(body[data-oncover]),body[data-oncover]{background:#3a3532}
       document.body.removeChild(ta);
     }
   }
+})();
+
+/* 8. ホーム画面から開いたとき（iOS）：窓の高さが画面よりステータスバーぶん短く扱われ、
+   下に貼ったものが浮く不具合の手当て。画面と窓の差を --vb-gap に入れて CSS で下へ伸ばし、
+   あわせて body を一度 display:none→戻して WebKit に測り直させる（差が消えればそれで済む）。 */
+(function () {
+  if (!window.navigator.standalone) return;
+  var root = document.documentElement, healed = 0;
+  function gap() {
+    if (window.innerHeight < window.innerWidth) return 0;          /* 横向きは対象外 */
+    var g = window.screen.height - window.innerHeight;
+    return (g > 4 && g < 140) ? g : 0;
+  }
+  function heal() {
+    if (healed >= 3) return;
+    healed++;
+    var y = window.pageYOffset;
+    document.body.style.display = 'none';
+    void document.body.offsetHeight;
+    document.body.style.display = '';
+    window.scrollTo(0, y);
+  }
+  function apply() {
+    var g = gap();
+    if (g) { heal(); g = gap(); }
+    root.style.setProperty('--vb-gap', g + 'px');
+  }
+  apply();
+  window.addEventListener('resize', function () { setTimeout(apply, 120); }, { passive: true });
+  window.addEventListener('orientationchange', function () { setTimeout(apply, 300); }, { passive: true });
 })();
 </script></body></html>
