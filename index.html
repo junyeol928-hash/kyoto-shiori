@@ -1916,7 +1916,7 @@ body{transition:background .4s}
 }
 /* 表紙の絵は画面そのものに貼る（ページ送りのとき）。上はステータスバーの裏、下はインジケータの裏まで */
 :root[data-mode="paged"] .cover__photo{position:fixed;inset:0;z-index:0;height:auto}
-:root[data-mode="paged"] .cover__over{position:relative;z-index:1}
+:root[data-mode="paged"] .cover__over{position:fixed;left:0;right:0;bottom:0;z-index:1}
 :root[data-mode="paged"] .cover{overflow:visible}
 html:has(body[data-oncover]),body[data-oncover]{background:#2b2622}
 :root[data-theme="dark"] body[data-oncover]{background:#0b1530}
