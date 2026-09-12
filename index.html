@@ -1914,6 +1914,12 @@ body{transition:background .4s}
   .cover{min-height:calc(100dvh + var(--safe-t) + var(--safe-b));margin-top:calc(-1 * var(--safe-t))}
   :root[data-mode="paged"] body:has(.cover.pg-on){padding-bottom:0}
 }
+/* 表紙の絵は画面そのものに貼る（ページ送りのとき）。上はステータスバーの裏、下はインジケータの裏まで */
+:root[data-mode="paged"] .cover__photo{position:fixed;inset:0;z-index:0;height:auto}
+:root[data-mode="paged"] .cover__over{position:relative;z-index:1}
+:root[data-mode="paged"] .cover{overflow:visible}
+html:has(body[data-oncover]),body[data-oncover]{background:#2b2622}
+:root[data-theme="dark"] body[data-oncover]{background:#0b1530}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <script>(function(d){var r=d.documentElement;r.classList.add('js');/* 最初は昼で開く。「夜」を押したときだけ夜を覚える */try{r.setAttribute('data-theme',localStorage.getItem('kyoto-theme')==='dark'?'dark':'light');}catch(e){r.setAttribute('data-theme','light');}if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}var m='paged';try{if(localStorage.getItem('kyoto-mode')==='flow')m='flow';}catch(e){}r.setAttribute('data-mode',m);try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}})(document);</script>
