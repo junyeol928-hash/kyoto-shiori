@@ -1924,6 +1924,9 @@ html:has(body[data-oncover]),body[data-oncover]{background:#2b2622}
 body[data-oncover] .pager__b,body[data-oncover] .pager__b i,body[data-oncover] .pager__mid small,
 body[data-oncover] .topbtns .tbtn{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55)}
 body[data-oncover] .pager__b[aria-disabled="true"]{opacity:.35}
+/* 端末によっては fixed の範囲が上下の安全領域を含まないので、そのぶん外へ伸ばす */
+:root[data-mode="paged"] .cover__photo{top:calc(-1 * var(--safe-t) - 2px);bottom:calc(-1 * var(--safe-b) - 2px);left:0;right:0}
+html:has(body[data-oncover]),body[data-oncover]{background:#3a3532}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <script>(function(d){var r=d.documentElement;r.classList.add('js');/* 最初は昼で開く。「夜」を押したときだけ夜を覚える */try{r.setAttribute('data-theme',localStorage.getItem('kyoto-theme')==='dark'?'dark':'light');}catch(e){r.setAttribute('data-theme','light');}if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}var m='paged';try{if(localStorage.getItem('kyoto-mode')==='flow')m='flow';}catch(e){}r.setAttribute('data-mode',m);try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}})(document);</script>
