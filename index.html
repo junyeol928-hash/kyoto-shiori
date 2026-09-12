@@ -1938,6 +1938,10 @@ html:has(body[data-oncover]),body[data-oncover],:root[data-theme="dark"] body[da
 /* 台紙の上のページ送り：細く、静かに */
 body[data-oncover] .pager__b,body[data-oncover] .pager__b i,body[data-oncover] .pager__mid small{color:rgba(246,242,234,.72);text-shadow:none}
 body[data-oncover] .pager__mid small{letter-spacing:.3em}
+/* iOS のホーム画面起動：表紙を画面の高さ＋1px にして、窓を画面いっぱいに保つ（app.js 8 参照） */
+@media (display-mode: standalone){
+  :root[data-mode="paged"] .cover{min-height:calc(var(--scr-h,100dvh) + 1px)}
+}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <script>(function(d){var r=d.documentElement;r.classList.add('js');/* 最初は昼で開く。「夜」を押したときだけ夜を覚える */try{r.setAttribute('data-theme',localStorage.getItem('kyoto-theme')==='dark'?'dark':'light');}catch(e){r.setAttribute('data-theme','light');}if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}var m='paged';try{if(localStorage.getItem('kyoto-mode')==='flow')m='flow';}catch(e){}r.setAttribute('data-mode',m);try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}})(document);</script>
@@ -2548,30 +2552,20 @@ body[data-oncover] .pager__mid small{letter-spacing:.3em}
 })();
 
 
-/* 8. ホーム画面から開いたとき（iOS）：起動直後だけ窓の高さがステータスバーぶん短く扱われ、
-   表紙のページ送りが浮く。ページを切り替える（表紙を display:none にして戻す）と直ることが
-   わかったので、短いあいだは同じことを何度か自動でやって、WebKit に測り直させる。 */
+/* 8. ホーム画面から開いたとき（iOS 18）：書類が画面より短いと、窓の高さが
+   「画面 − ステータスバー」(894) に縮み、下に貼ったものが 62px 浮く。書類が画面より
+   長ければ窓は画面いっぱい (956) になるので、表紙の高さを実際の画面の高さ＋1px にして
+   ほかのページと同じ条件にする。 */
 (function () {
   if (!window.navigator.standalone) return;
-  var n = 0;
-  function isShort() {
-    if (window.innerHeight < window.innerWidth) return false;         /* 横向きは対象外 */
-    var g = window.screen.height - window.innerHeight;
-    return g > 4 && g < 140;
+  var root = document.documentElement;
+  function apply() {
+    if (window.innerHeight < window.innerWidth) { root.style.removeProperty('--scr-h'); return; }
+    root.style.setProperty('--scr-h', window.screen.height + 'px');
   }
-  function heal() {
-    if (n >= 6 || !isShort()) return;
-    n++;
-    var y = window.pageYOffset;
-    var el = document.querySelector('.cover') || document.body;
-    el.style.display = 'none'; void el.offsetHeight; el.style.display = '';
-    document.body.style.display = 'none'; void document.body.offsetHeight; document.body.style.display = '';
-    window.scrollTo(0, y);
-  }
-  [0, 250, 700, 1500, 3000].forEach(function (t) { setTimeout(heal, t); });
-  window.addEventListener('pageshow', function () { setTimeout(heal, 100); });
-  window.addEventListener('resize', function () { setTimeout(heal, 150); }, { passive: true });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(heal, 150); });
+  apply();
+  window.addEventListener('orientationchange', function () { setTimeout(apply, 300); });
+  window.addEventListener('resize', apply, { passive: true });
 })();
 
 /* DEBUG（一時）：端末での高さの実測を画面に出す */
