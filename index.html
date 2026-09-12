@@ -1890,6 +1890,10 @@ body[data-oncover] .pager__b,body[data-oncover] .pager__b i,body[data-oncover] .
 .cover__names .ito--v .ito__b{stroke:#9fbde6;stroke-width:1.6}
 .cover__names{font-size:clamp(18px,4.8vw,26px);align-items:center}
 .cover__names .ito--v{height:3.05em;width:10px;align-self:center}
+/* 表紙の上下：Safari のバーの外側（ステータスバーの裏・下の余白）も絵の色でつなぐ */
+.cover{min-height:100vh;min-height:100dvh}
+html:has(body[data-oncover]){background:#5b97cf}
+:root[data-theme="dark"]:has(body[data-oncover]){background:#0b1530}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <script>(function(d){var r=d.documentElement;r.classList.add('js');/* 最初は昼で開く。「夜」を押したときだけ夜を覚える */try{r.setAttribute('data-theme',localStorage.getItem('kyoto-theme')==='dark'?'dark':'light');}catch(e){r.setAttribute('data-theme','light');}if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}var m='paged';try{if(localStorage.getItem('kyoto-mode')==='flow')m='flow';}catch(e){}r.setAttribute('data-mode',m);try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}})(document);</script>
@@ -1925,6 +1929,7 @@ body[data-oncover] .pager__b,body[data-oncover] .pager__b i,body[data-oncover] .
       try { localStorage.setItem('kyoto-theme', next); } catch (e) {}
       themeBtn.setAttribute('aria-label', next === 'dark' ? '明るい配色にする' : '暗い配色にする');
       paintStatusBar(next === 'dark');
+      try { window.dispatchEvent(new Event('scroll')); } catch (e) {}
     });
   }
 
@@ -2419,6 +2424,11 @@ body[data-oncover] .pager__b,body[data-oncover] .pager__b i,body[data-oncover] .
     var r = cover.getBoundingClientRect();
     var on = r.bottom > 60 && r.top < 60 && cover.offsetParent !== null;
     if (on) document.body.setAttribute('data-oncover', '1'); else document.body.removeAttribute('data-oncover');
+    /* iPhone の上のバーの色も、表紙の空に合わせる（夜は夜空） */
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var col = on ? (dark ? '#0b1530' : '#5b97cf') : (dark ? '#15130f' : '#f8f7f3');
+    var metas = document.querySelectorAll('meta[name="theme-color"]');
+    for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', col);
   }
   onCover();
   window.addEventListener('scroll', onCover, { passive: true });

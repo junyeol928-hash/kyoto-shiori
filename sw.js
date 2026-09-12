@@ -1,5 +1,5 @@
 // 京都、四日間 — 一度開けば圏外でも開けるようにする
-var CACHE = 'kyoto-' + '09351c5170';
+var CACHE = 'kyoto-' + '3b1e3b1266';
 var FILES = ['./', './index.html', './manifest.webmanifest'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
