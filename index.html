@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="京都しおり">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAB60lEQVR42u3dwQ2DQAxFQbpAiJKok14oiwa4IXbtz0ivAMsZJQQCWfZtlR5brEBwCA7BITgEh+AQHIJDcAgOCQ7BITgEh+AQHIJDcAgOwSHBITgEh+AQHIJDcAgOwSE4JDgEh+AQHIJDcAgOwSE4BIfgeNF1HioYHIJDcAgOwSE4vAxwwAEHHHDAAQcccLi2IhfeFILDG3uXjw844IADDjgEh+AQHIIDDjhGVWFNqdPCYVo44IADDjjggAMOOOCAw7rhsG444IADDjjgMC0cpoUDDjjggAMOOOCAAw44rBsO64YDDjjgMG0Ijjq/08+bFg7TwgFHNg73rlUTAwcccMABBxxwwAEHHHDAAQcccMABh3OOzpDCAQcccMBhWjhMCwcccMABBxxwwAHHrHOmpoUDDjjggAMOOOCAAw44rBsOOOCAAw44TAuHaeGAAw444IADDjjggAMO64bDuuGAAw444IDDtHDA8SMcvR5xkfFADjhMC4dp4YADDjjggAMOOOCAAw7rhsO64YADDjjggMO0cMABBxxwwAEHHHDAAQcccFg3HHDAkSdj/MaT/vSvza0JgkNwCA7BITgEx6yvcPo6OASH4FACDjkgFRwSHIJDcAgOwSE4BIfgEByCQ4JDcAgOwSE4BIfgUMtu3Pw1PLZaMXEAAAAASUVORK5CYII=">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231b1917'/%3E%3Cpath d='M6 22h20M9 22V13l7-5 7 5v9M13 22v-6h6v6' stroke='%23c8a54b' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1898,6 +1898,17 @@ html:has(body[data-oncover]){background:#5b97cf}
 :root[data-mode="paged"] .pager{background:none !important;padding-top:0}
 .pager__b,.pager__b i,.pager__mid small{text-shadow:0 0 4px var(--bg),0 0 8px var(--bg),0 0 14px var(--bg),0 0 20px var(--bg)}
 body[data-oncover] .pager__b,body[data-oncover] .pager__b i,body[data-oncover] .pager__mid small{text-shadow:0 1px 3px rgba(0,0,0,.6),0 0 10px rgba(0,0,0,.5)}
+/* ホーム画面から開いたとき：ステータスバーの裏まで紙／絵で埋める */
+@media (display-mode: standalone){
+  body{padding-top:var(--safe-t)}
+  .cover{margin-top:calc(-1 * var(--safe-t));min-height:calc(100dvh)}
+  .drawer{padding-top:calc(var(--safe-t) + 70px)}
+}
+/* 表紙の上の帯の色（Safari の中）：空と同じ青 */
+html:has(body[data-oncover]){background:#5b97cf}
+body[data-oncover]{background:#5b97cf}
+:root[data-theme="dark"] body[data-oncover]{background:#0b1530}
+body{transition:background .4s}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <script>(function(d){var r=d.documentElement;r.classList.add('js');/* 最初は昼で開く。「夜」を押したときだけ夜を覚える */try{r.setAttribute('data-theme',localStorage.getItem('kyoto-theme')==='dark'?'dark':'light');}catch(e){r.setAttribute('data-theme','light');}if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}var m='paged';try{if(localStorage.getItem('kyoto-mode')==='flow')m='flow';}catch(e){}r.setAttribute('data-mode',m);try{if('scrollRestoration' in history)history.scrollRestoration='manual';}catch(e){}})(document);</script>
