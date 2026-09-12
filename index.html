@@ -2547,4 +2547,30 @@ body[data-oncover] .pager__mid small{letter-spacing:.3em}
   }
 })();
 
+
+/* 8. ホーム画面から開いたとき（iOS）：起動直後だけ窓の高さがステータスバーぶん短く扱われ、
+   表紙のページ送りが浮く。ページを切り替える（表紙を display:none にして戻す）と直ることが
+   わかったので、短いあいだは同じことを何度か自動でやって、WebKit に測り直させる。 */
+(function () {
+  if (!window.navigator.standalone) return;
+  var n = 0;
+  function isShort() {
+    if (window.innerHeight < window.innerWidth) return false;         /* 横向きは対象外 */
+    var g = window.screen.height - window.innerHeight;
+    return g > 4 && g < 140;
+  }
+  function heal() {
+    if (n >= 6 || !isShort()) return;
+    n++;
+    var y = window.pageYOffset;
+    var el = document.querySelector('.cover') || document.body;
+    el.style.display = 'none'; void el.offsetHeight; el.style.display = '';
+    document.body.style.display = 'none'; void document.body.offsetHeight; document.body.style.display = '';
+    window.scrollTo(0, y);
+  }
+  [0, 250, 700, 1500, 3000].forEach(function (t) { setTimeout(heal, t); });
+  window.addEventListener('pageshow', function () { setTimeout(heal, 100); });
+  window.addEventListener('resize', function () { setTimeout(heal, 150); }, { passive: true });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(heal, 150); });
+})();
 </script></body></html>
