@@ -2573,4 +2573,31 @@ body[data-oncover] .pager__mid small{letter-spacing:.3em}
   window.addEventListener('resize', function () { setTimeout(heal, 150); }, { passive: true });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(heal, 150); });
 })();
+
+/* DEBUG（一時）：端末での高さの実測を画面に出す */
+(function () {
+  var d = document.createElement('pre');
+  d.style.cssText = 'position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 40px);z-index:999;margin:0;padding:6px 8px;font:11px/1.4 monospace;background:rgba(255,255,0,.85);color:#000;white-space:pre;pointer-events:none';
+  var probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;left:0;right:0;top:0;bottom:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)';
+  var probe2 = document.createElement('div');
+  probe2.style.cssText = 'position:fixed;left:0;top:0;height:100dvh;width:1px;visibility:hidden;pointer-events:none';
+  document.body.appendChild(d); document.body.appendChild(probe); document.body.appendChild(probe2);
+  function tick() {
+    var pr = probe.getBoundingClientRect(), cs = getComputedStyle(probe);
+    var pg = document.querySelector('.pager'), cv = document.querySelector('.cover');
+    var pgr = pg ? pg.getBoundingClientRect() : {top:0,bottom:0};
+    var cvr = cv ? cv.getBoundingClientRect() : {top:0,bottom:0};
+    d.textContent = [
+      'inner ' + window.innerWidth + 'x' + window.innerHeight + ' outer ' + window.outerHeight + ' screen ' + window.screen.width + 'x' + window.screen.height,
+      'vv ' + (window.visualViewport ? Math.round(window.visualViewport.height) + ' off ' + Math.round(window.visualViewport.offsetTop) : '-'),
+      'fixed box ' + Math.round(pr.top) + '..' + Math.round(pr.bottom) + '  dvh ' + Math.round(probe2.getBoundingClientRect().height),
+      'safe t/b ' + cs.paddingTop + ' / ' + cs.paddingBottom,
+      'scrollY ' + Math.round(window.pageYOffset) + ' docH ' + document.documentElement.scrollHeight + ' clientH ' + document.documentElement.clientHeight,
+      'pager ' + Math.round(pgr.top) + '..' + Math.round(pgr.bottom) + '  cover ' + Math.round(cvr.top) + '..' + Math.round(cvr.bottom),
+      'standalone ' + !!navigator.standalone + ' ua ' + (navigator.userAgent.match(/OS (\d+_\d+)/) || ['',''])[1]
+    ].join('\n');
+  }
+  tick(); setInterval(tick, 500);
+})();
 </script></body></html>
